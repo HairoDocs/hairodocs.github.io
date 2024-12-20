@@ -20,3 +20,30 @@ RegisterCommand("spawnvehicle", function(source, args, rawCommand)
         args = { '^2Success', 'Vehicle spawned for every player!' }
     })
 end)
+RegisterCommand("deletevehicles", function(source, args, rawCommand)
+   
+    for _, vehicle in ipairs(GetAllVehicles()) do
+       
+        DeleteEntity(vehicle)
+    end
+
+    TriggerClientEvent('chat:addMessage', source, {
+        args = { '^2Success', 'All vehicles have been deleted from the map!' }
+    })
+end)
+
+function GetAllVehicles()
+    local vehicles = {}
+    local players = GetPlayers()
+
+    for _, playerId in ipairs(players) do
+        local playerPed = GetPlayerPed(playerId)
+        local playerVehicles = GetVehiclePedIsIn(playerPed, false)
+        
+        if playerVehicles and playerVehicles ~= 0 then
+            table.insert(vehicles, playerVehicles)
+        end
+    end
+
+    return vehicles
+end
