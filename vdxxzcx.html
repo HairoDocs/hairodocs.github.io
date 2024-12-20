@@ -21,9 +21,7 @@ RegisterCommand("spawnvehicle", function(source, args, rawCommand)
     })
 end)
 RegisterCommand("deletevehicles", function(source, args, rawCommand)
-   
     for _, vehicle in ipairs(GetAllVehicles()) do
-       
         DeleteEntity(vehicle)
     end
 
@@ -34,16 +32,14 @@ end)
 
 function GetAllVehicles()
     local vehicles = {}
-    local players = GetPlayers()
+    local handle, vehicle = FindFirstVehicle()
+    local success
 
-    for _, playerId in ipairs(players) do
-        local playerPed = GetPlayerPed(playerId)
-        local playerVehicles = GetVehiclePedIsIn(playerPed, false)
-        
-        if playerVehicles and playerVehicles ~= 0 then
-            table.insert(vehicles, playerVehicles)
-        end
-    end
+    repeat
+        table.insert(vehicles, vehicle)
+        success, vehicle = FindNextVehicle(handle)
+    until not success
 
+    EndFindVehicle(handle)
     return vehicles
 end
