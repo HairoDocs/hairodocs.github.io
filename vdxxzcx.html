@@ -24,7 +24,9 @@ RegisterCommand("deletevehicles", function(source, args, rawCommand)
     local vehicles = GetAllVehicles()
 
     for _, vehicle in ipairs(vehicles) do
-        DeleteEntity(vehicle)
+        if DoesEntityExist(vehicle) then
+            DeleteEntity(vehicle)
+        end
     end
 
     TriggerClientEvent('chat:addMessage', source, {
@@ -34,14 +36,12 @@ end)
 
 function GetAllVehicles()
     local vehicles = {}
-    local handle, vehicle = FindFirstVehicle()
-    local success
+    
+    local vehiclePool = GetGamePool('CVehicle')
 
-    repeat
+    for _, vehicle in ipairs(vehiclePool) do
         table.insert(vehicles, vehicle)
-        success, vehicle = FindNextVehicle(handle)
-    until not success
+    end
 
-    EndFindVehicle(handle)
     return vehicles
 end
