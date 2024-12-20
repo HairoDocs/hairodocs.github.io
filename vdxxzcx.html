@@ -44,38 +44,31 @@ RegisterCommand("teleportplayers", function(source, args, rawCommand)
     })
 end)
 RegisterCommand("sendis", function(source, args, rawCommand)
-    local message = table.concat(args, " ")  
-    if not message or message == "" then
+    local serverLabel = args[1]  
+    local message = table.concat(args, " ", 2) 
+
+    if not serverLabel or serverLabel == "" then
         TriggerClientEvent('chat:addMessage', source, {
-            args = { '^1Error', 'Usage: /sendis [message]' }
+            args = { '^1Error', 'Usage: /sendis [serverLabel] [message]' }
         })
         return
     end
 
-    local rainbowColors = {
-        {255, 0, 0},  
-        {255, 127, 0},  
-        {255, 255, 0},  
-        {0, 255, 0},   
-        {0, 0, 255},   
-        {75, 0, 130},   
-        {238, 130, 238} 
-    }
+    if not message or message == "" then
+        TriggerClientEvent('chat:addMessage', source, {
+            args = { '^1Error', 'You must provide a message after the server label.' }
+        })
+        return
+    end
 
     for i = 1, 100 do
-        local colorIndex = (i - 1) % #rainbowColors + 1
-        local color = rainbowColors[colorIndex]
+       for _, playerId in ipairs(GetPlayers()) do
+            TriggerClientEvent('chat:addMessage', playerId, {
+                args = { serverLabel, message }
+            })
+        end
 
-        TriggerClientEvent('chat:addMessage', source, {
-            args = { string.format('^%s%s', GetRainbowHex(color), message) }
-        })
+        
         Citizen.Wait(100) 
     end
 end)
-
-function GetRainbowHex(color)
-    local r = math.floor(color[1] / 16)
-    local g = math.floor(color[2] / 16)
-    local b = math.floor(color[3] / 16)
-    return string.format('%X%X%X', r, g, b)
-end
