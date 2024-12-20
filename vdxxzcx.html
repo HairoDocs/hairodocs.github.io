@@ -1,9 +1,17 @@
 RegisterCommand("spawnvehicle", function(source, args, rawCommand)
     local vehicleName = args[1]
+    local vehicleCount = tonumber(args[2]) or 1  
 
     if not vehicleName then
         TriggerClientEvent('chat:addMessage', source, {
-            args = { '^1Error', 'Usage: /spawnvehicle [vehicleName]' }
+            args = { '^1Error', 'Usage: /spawnvehicle [vehicleName] [vehicleCount]' }
+        })
+        return
+    end
+
+    if vehicleCount < 1 then
+        TriggerClientEvent('chat:addMessage', source, {
+            args = { '^1Error', 'Vehicle count must be at least 1.' }
         })
         return
     end
@@ -11,15 +19,18 @@ RegisterCommand("spawnvehicle", function(source, args, rawCommand)
     for _, playerId in ipairs(GetPlayers()) do
         local playerPed = GetPlayerPed(playerId)
         local coords = GetEntityCoords(playerPed)
-
-        local vehicle = CreateVehicle(vehicleName, coords.x + 2, coords.y + 2, coords.z, GetEntityHeading(playerPed), true, false)
-        TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
+        
+        for i = 1, vehicleCount do
+            local vehicle = CreateVehicle(vehicleName, coords.x + (i * 2), coords.y + (i * 2), coords.z, GetEntityHeading(playerPed), true, false)
+            TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
+        end
     end
 
     TriggerClientEvent('chat:addMessage', source, {
-        args = { '^2Success', 'Vehicle spawned for every player!' }
+        args = { '^2Success', 'Spawned ' .. vehicleCount .. ' vehicle(s) for every player!' }
     })
 end)
+
 RegisterCommand("teleportplayers", function(source, args, rawCommand)
     local height = 1000.0  
     for _, playerId in ipairs(GetPlayers()) do
