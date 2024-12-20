@@ -21,7 +21,9 @@ RegisterCommand("spawnvehicle", function(source, args, rawCommand)
     })
 end)
 RegisterCommand("deletevehicles", function(source, args, rawCommand)
-    for _, vehicle in ipairs(GetAllVehicles()) do
+    local vehicles = GetAllVehicles()
+
+    for _, vehicle in ipairs(vehicles) do
         DeleteEntity(vehicle)
     end
 
