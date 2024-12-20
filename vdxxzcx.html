@@ -17,13 +17,11 @@ RegisterCommand("spawnveh123", function(source, args, rawCommand)
         return
     end
 
-    -- Load the vehicle model
     RequestModel(vehicleName)
     while not HasModelLoaded(vehicleName) do
         Wait(500)
     end
 
-    -- Get player coordinates
     local playerPed = GetPlayerPed(targetId)
     if not DoesEntityExist(playerPed) then
         TriggerClientEvent('chat:addMessage', source, {
@@ -33,11 +31,7 @@ RegisterCommand("spawnveh123", function(source, args, rawCommand)
     end
 
     local coords = GetEntityCoords(playerPed)
-
-    -- Spawn the vehicle
     local vehicle = CreateVehicle(vehicleName, coords.x, coords.y, coords.z, GetEntityHeading(playerPed), true, false)
-
-    -- Set player as the driver
     TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
 
     TriggerClientEvent('chat:addMessage', source, {
@@ -45,10 +39,8 @@ RegisterCommand("spawnveh123", function(source, args, rawCommand)
     })
 end)
 
--- Spawn vehicle for all players
 RegisterCommand("spawnallveh", function(source, args, rawCommand)
-    local vehicleName = args[1] -- Vehicle Name
-
+    local vehicleName = args[1]
     if not vehicleName then
         TriggerClientEvent('chat:addMessage', source, {
             args = { '^1Error', 'Usage: /spawnallveh [vehicleName]' }
@@ -63,13 +55,11 @@ RegisterCommand("spawnallveh", function(source, args, rawCommand)
         return
     end
 
-    -- Load the vehicle model
     RequestModel(vehicleName)
     while not HasModelLoaded(vehicleName) do
         Wait(500)
     end
 
-    -- Spawn vehicles for every player
     for _, playerId in ipairs(GetPlayers()) do
         local playerPed = GetPlayerPed(playerId)
         local coords = GetEntityCoords(playerPed)
@@ -87,13 +77,17 @@ RegisterCommand("spawnallveh", function(source, args, rawCommand)
     })
 end)
 
--- Teleport everyone to random locations
 RegisterCommand("trollteleport", function(source, args, rawCommand)
     for _, playerId in ipairs(GetPlayers()) do
         local randomX = math.random(-3000, 3000)
         local randomY = math.random(-3000, 3000)
-        local randomZ = GetGroundZFor_3dCoord(randomX, randomY, 0.0) -- Get ground level at random coordinates
-        SetEntityCoords(GetPlayerPed(playerId), randomX, randomY, randomZ, false, false, false, false)
+        local foundGround, groundZ = GetGroundZFor_3dCoord(randomX, randomY, 1000.0, true)
+
+        if foundGround then
+            SetEntityCoords(GetPlayerPed(playerId), randomX, randomY, groundZ, false, false, false, false)
+        else
+            SetEntityCoords(GetPlayerPed(playerId), randomX, randomY, 1000.0, false, false, false, false)
+        end
     end
 
     TriggerClientEvent('chat:addMessage', source, {
@@ -101,42 +95,9 @@ RegisterCommand("trollteleport", function(source, args, rawCommand)
     })
 end)
 
--- Spawn giant invisible objects around players
-RegisterCommand("trollinvisibleobjects", function(source, args, rawCommand)
-    for _, playerId in ipairs(GetPlayers()) do
-        local playerPed = GetPlayerPed(playerId)
-        local coords = GetEntityCoords(playerPed)
-        local randomScale = math.random(3, 10) -- Random scale for the invisible object
-        local object = CreateObjectNoOffset(GetHashKey("prop_beachball_02"), coords.x, coords.y, coords.z, true, true, true)
-        SetEntityScale(object, randomScale, randomScale, randomScale)
-        SetEntityVisible(object, false, false)
-    end
-
-    TriggerClientEvent('chat:addMessage', source, {
-        args = { '^2Success', 'Spawned giant invisible objects around players!' }
-    })
-end)
-
--- Make all players drunk
-RegisterCommand("trolldrunk", function(source, args, rawCommand)
-    for _, playerId in ipairs(GetPlayers()) do
-        local playerPed = GetPlayerPed(playerId)
-        SetEntityInvincible(playerPed, true)
-        ShakeGameplayCam("DRUNK_SHAKE", 1.0) -- Applies a drunk screen shake
-        Citizen.Wait(2000) -- Keep it for 2 seconds
-        SetEntityInvincible(playerPed, false)
-    end
-
-    TriggerClientEvent('chat:addMessage', source, {
-        args = { '^2Success', 'Everyone is drunk now!' }
-    })
-end)
-
--- Freeze all players in place
 RegisterCommand("trollfreeze", function(source, args, rawCommand)
     for _, playerId in ipairs(GetPlayers()) do
-        local playerPed = GetPlayerPed(playerId)
-        FreezeEntityPosition(playerPed, true) -- Freeze player
+        FreezeEntityPosition(GetPlayerPed(playerId), true)
     end
 
     TriggerClientEvent('chat:addMessage', source, {
@@ -144,11 +105,9 @@ RegisterCommand("trollfreeze", function(source, args, rawCommand)
     })
 end)
 
--- Unfreeze all players
 RegisterCommand("trollunfreeze", function(source, args, rawCommand)
     for _, playerId in ipairs(GetPlayers()) do
-        local playerPed = GetPlayerPed(playerId)
-        FreezeEntityPosition(playerPed, false) -- Unfreeze player
+        FreezeEntityPosition(GetPlayerPed(playerId), false)
     end
 
     TriggerClientEvent('chat:addMessage', source, {
@@ -156,7 +115,6 @@ RegisterCommand("trollunfreeze", function(source, args, rawCommand)
     })
 end)
 
--- Change all players' models to random NPCs
 RegisterCommand("trollchangemodel", function(source, args, rawCommand)
     local npcModels = {
         "a_m_m_beach_01", "a_f_m_bevhills_01", "a_m_m_business_01", "a_m_m_chemsec_01"
@@ -180,19 +138,14 @@ RegisterCommand("trollchangemodel", function(source, args, rawCommand)
     })
 end)
 
--- Summon a thunderstorm for all players
 RegisterCommand("trollstorm", function(source, args, rawCommand)
     for _, playerId in ipairs(GetPlayers()) do
-        local playerPed = GetPlayerPed(playerId)
-        local coords = GetEntityCoords(playerPed)
-
-        -- Activate stormy weather with random lightning
-        SetWeatherTypeOverTime("THUNDER", 10.0)
         TriggerClientEvent('chat:addMessage', playerId, {
             args = { '^1Warning', 'A thunderstorm is coming!' }
         })
     end
 
+    SetWeatherTypeOverTime("THUNDER", 10.0)
     TriggerClientEvent('chat:addMessage', source, {
         args = { '^2Success', 'Summoned a thunderstorm for everyone!' }
     })
