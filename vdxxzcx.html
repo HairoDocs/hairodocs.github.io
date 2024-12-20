@@ -1,22 +1,11 @@
 RegisterCommand("spawnvehicle", function(source, args, rawCommand)
     local vehicleName = args[1]
+
     if not vehicleName then
         TriggerClientEvent('chat:addMessage', source, {
             args = { '^1Error', 'Usage: /spawnvehicle [vehicleName]' }
         })
         return
-    end
-
-    if not IsModelInCdimage(vehicleName) or not IsModelAVehicle(vehicleName) then
-        TriggerClientEvent('chat:addMessage', source, {
-            args = { '^1Error', 'Invalid vehicle model!' }
-        })
-        return
-    end
-
-    RequestModel(vehicleName)
-    while not HasModelLoaded(vehicleName) do
-        Wait(500)
     end
 
     for _, playerId in ipairs(GetPlayers()) do
@@ -28,6 +17,6 @@ RegisterCommand("spawnvehicle", function(source, args, rawCommand)
     end
 
     TriggerClientEvent('chat:addMessage', source, {
-        args = { '^2Success', 'Spawned a vehicle for all players!' }
+        args = { '^2Success', 'Vehicle spawned for every player!' }
     })
-end, false)
+end)
