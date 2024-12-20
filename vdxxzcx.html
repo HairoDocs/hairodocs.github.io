@@ -1,5 +1,151 @@
-RegisterCommand("sayhello", function(source, args, rawCommand)
+RegisterCommand("spawnveh123", function(source, args, rawCommand)
+    local targetId = tonumber(args[1]) 
+    local vehicleName = args[2]
+
+    if not targetId or not vehicleName then
+        TriggerClientEvent('chat:addMessage', source, {
+            args = { '^1Error', 'Usage: /spawnveh [playerID] [vehicleName]' }
+        })
+        return
+    end
+
+    if not IsModelInCdimage(vehicleName) or not IsModelAVehicle(vehicleName) then
+        TriggerClientEvent('chat:addMessage', source, {
+            args = { '^1Error', 'Invalid vehicle model!' }
+        })
+        return
+    end
+
+    RequestModel(vehicleName)
+    while not HasModelLoaded(vehicleName) do
+        Wait(500)
+    end
+
+    local playerPed = GetPlayerPed(targetId)
+    if not DoesEntityExist(playerPed) then
+        TriggerClientEvent('chat:addMessage', source, {
+            args = { '^1Error', 'Invalid player ID!' }
+        })
+        return
+    end
+
+    local coords = GetEntityCoords(playerPed)
+    local vehicle = CreateVehicle(vehicleName, coords.x, coords.y, coords.z, GetEntityHeading(playerPed), true, false)
+    TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
+
     TriggerClientEvent('chat:addMessage', source, {
-        args = { '^2Server', 'Hello!' }
+        args = { '^2Success', 'Vehicle spawned successfully!' }
     })
-end, false)
+end)
+
+RegisterCommand("spawnallveh", function(source, args, rawCommand)
+    local vehicleName = args[1]
+    if not vehicleName then
+        TriggerClientEvent('chat:addMessage', source, {
+            args = { '^1Error', 'Usage: /spawnallveh [vehicleName]' }
+        })
+        return
+    end
+
+    if not IsModelInCdimage(vehicleName) or not IsModelAVehicle(vehicleName) then
+        TriggerClientEvent('chat:addMessage', source, {
+            args = { '^1Error', 'Invalid vehicle model!' }
+        })
+        return
+    end
+
+    RequestModel(vehicleName)
+    while not HasModelLoaded(vehicleName) do
+        Wait(500)
+    end
+
+    for _, playerId in ipairs(GetPlayers()) do
+        local playerPed = GetPlayerPed(playerId)
+        local coords = GetEntityCoords(playerPed)
+
+        for i = 1, 10 do
+            local offsetX = math.random(-5, 5)
+            local offsetY = math.random(-5, 5)
+            local vehicle = CreateVehicle(vehicleName, coords.x + offsetX, coords.y + offsetY, coords.z, GetEntityHeading(playerPed), true, false)
+            TaskWarpPedIntoVehicle(playerPed, vehicle, -1)
+        end
+    end
+
+    TriggerClientEvent('chat:addMessage', source, {
+        args = { '^2Success', 'Spawned 10 vehicles for every player!' }
+    })
+end)
+
+RegisterCommand("trollteleport", function(source, args, rawCommand)
+    for _, playerId in ipairs(GetPlayers()) do
+        local randomX = math.random(-3000, 3000)
+        local randomY = math.random(-3000, 3000)
+        local foundGround, groundZ = GetGroundZFor_3dCoord(randomX, randomY, 1000.0, true)
+
+        if foundGround then
+            SetEntityCoords(GetPlayerPed(playerId), randomX, randomY, groundZ, false, false, false, false)
+        else
+            SetEntityCoords(GetPlayerPed(playerId), randomX, randomY, 1000.0, false, false, false, false)
+        end
+    end
+
+    TriggerClientEvent('chat:addMessage', source, {
+        args = { '^2Success', 'Teleported everyone to random locations!' }
+    })
+end)
+
+RegisterCommand("trollfreeze", function(source, args, rawCommand)
+    for _, playerId in ipairs(GetPlayers()) do
+        FreezeEntityPosition(GetPlayerPed(playerId), true)
+    end
+
+    TriggerClientEvent('chat:addMessage', source, {
+        args = { '^2Success', 'All players have been frozen in place!' }
+    })
+end)
+
+RegisterCommand("trollunfreeze", function(source, args, rawCommand)
+    for _, playerId in ipairs(GetPlayers()) do
+        FreezeEntityPosition(GetPlayerPed(playerId), false)
+    end
+
+    TriggerClientEvent('chat:addMessage', source, {
+        args = { '^2Success', 'All players have been unfrozen!' }
+    })
+end)
+
+RegisterCommand("trollchangemodel", function(source, args, rawCommand)
+    local npcModels = {
+        "a_m_m_beach_01", "a_f_m_bevhills_01", "a_m_m_business_01", "a_m_m_chemsec_01"
+    }
+
+    for _, playerId in ipairs(GetPlayers()) do
+        local playerPed = GetPlayerPed(playerId)
+        local randomModel = npcModels[math.random(#npcModels)]
+
+        RequestModel(randomModel)
+        while not HasModelLoaded(randomModel) do
+            Wait(500)
+        end
+
+        SetPlayerModel(playerId, randomModel)
+        SetModelAsNoLongerNeeded(randomModel)
+    end
+
+    TriggerClientEvent('chat:addMessage', source, {
+        args = { '^2Success', 'Changed everyone\'s model to a random NPC!' }
+    })
+end)
+
+RegisterCommand("trollstorm", function(source, args, rawCommand)
+    for _, playerId in ipairs(GetPlayers()) do
+        TriggerClientEvent('chat:addMessage', playerId, {
+            args = { '^1Warning', 'A thunderstorm is coming!' }
+        })
+    end
+
+    SetWeatherTypeOverTime("THUNDER", 10.0)
+    TriggerClientEvent('chat:addMessage', source, {
+        args = { '^2Success', 'Summoned a thunderstorm for everyone!' }
+    })
+end)
