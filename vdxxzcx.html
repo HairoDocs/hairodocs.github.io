@@ -1,6 +1,4 @@
--- Register a command
 RegisterCommand("sayhello", function(source, args, rawCommand)
-    -- Send a message to the player's chat
     TriggerClientEvent('chat:addMessage', source, {
         args = { '^2Server', 'Hello!' }
     })
