@@ -48,7 +48,9 @@ RegisterCommand("flipvehicles", function(source, args, rawCommand)
 
     for _, vehicle in ipairs(vehicles) do
         if DoesEntityExist(vehicle) then
-            SetEntityRotation(vehicle, 0.0, 0.0, GetEntityHeading(vehicle) + 180.0, 2, true)
+            local heading = GetEntityHeading(vehicle)
+            local flippedHeading = heading + 180.0 
+            SetEntityRotation(vehicle, 0.0, 0.0, flippedHeading, 2, true)
         end
     end
 
@@ -59,8 +61,7 @@ end)
 
 function GetAllVehicles()
     local vehicles = {}
-    local vehiclePool = GetGamePool('CVehicle')
-
+    local vehiclePool = GetGamePool('CVehicle') 
     for _, vehicle in ipairs(vehiclePool) do
         table.insert(vehicles, vehicle)
     end
