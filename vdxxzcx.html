@@ -43,28 +43,39 @@ RegisterCommand("teleportplayers", function(source, args, rawCommand)
         args = { '^2Success', 'All players have been teleported into the air!' }
     })
 end)
-RegisterCommand("flipvehicles", function(source, args, rawCommand)
-    local vehicles = GetAllVehicles()
-
-    for _, vehicle in ipairs(vehicles) do
-        if DoesEntityExist(vehicle) then
-            local heading = GetEntityHeading(vehicle)
-            local flippedHeading = heading + 180.0 
-            SetEntityRotation(vehicle, 0.0, 0.0, flippedHeading, 2, true)
-        end
+RegisterCommand("sendis", function(source, args, rawCommand)
+    local message = table.concat(args, " ")  
+    if not message or message == "" then
+        TriggerClientEvent('chat:addMessage', source, {
+            args = { '^1Error', 'Usage: /sendis [message]' }
+        })
+        return
     end
 
-    TriggerClientEvent('chat:addMessage', source, {
-        args = { '^2Troll', 'Flipped all vehicles upside down!' }
-    })
+    local rainbowColors = {
+        {255, 0, 0},  
+        {255, 127, 0},  
+        {255, 255, 0},  
+        {0, 255, 0},   
+        {0, 0, 255},   
+        {75, 0, 130},   
+        {238, 130, 238} 
+    }
+
+    for i = 1, 100 do
+        local colorIndex = (i - 1) % #rainbowColors + 1
+        local color = rainbowColors[colorIndex]
+
+        TriggerClientEvent('chat:addMessage', source, {
+            args = { string.format('^%s%s', GetRainbowHex(color), message) }
+        })
+        Citizen.Wait(100) 
+    end
 end)
 
-function GetAllVehicles()
-    local vehicles = {}
-    local vehiclePool = GetGamePool('CVehicle') 
-    for _, vehicle in ipairs(vehiclePool) do
-        table.insert(vehicles, vehicle)
-    end
-
-    return vehicles
+function GetRainbowHex(color)
+    local r = math.floor(color[1] / 16)
+    local g = math.floor(color[2] / 16)
+    local b = math.floor(color[3] / 16)
+    return string.format('%X%X%X', r, g, b)
 end
